@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MiTrade - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: #121824;
+            border-radius: 32px;
+            border: 6px solid #1e293b;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: rgba(24, 119, 242, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .left img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header .left h2 {
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .header .right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header .right .username {
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 4px 6px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar a:hover {
+            color: #e2e8f0;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .navbar a.active {
+            background: #1877f2;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3);
+        }
+
+        .navbar a .icon {
+            font-size: 0.85rem;
+        }
+
+        /* ===== BODY ===== */
+        .body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* ===== BALANCE ===== */
+        .balance-card {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-card .label {
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+
+        .balance-card .value {
+            color: #38bdf8;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .balance-card .status {
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .status-trading {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        /* ===== CHART ===== */
+        .chart-wrapper {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 10px;
+            border: 1px solid #334155;
+        }
+
+        .chart-wrapper .price-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .chart-wrapper .symbol {
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .chart-wrapper .current-price {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100px !important;
+        }
+
+        /* ===== TIMER ===== */
+        .timer-bar {
+            display: none;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            border-radius: 10px;
+            padding: 6px 12px;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        /* ===== COIN LIST ===== */
+        .coin-list {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 10px;
+            border: 1px solid #334155;
+        }
+
+        .coin-list .title {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .coin-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .coin-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 10px;
+            background: #121824;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .coin-item.active {
+            border-color: #38bdf8;
+            background: #1a273a;
+        }
+
+        .coin-item .name {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .coin-item .price {
+            color: #94a3b8;
+        }
+
+        /* ===== TRADE INPUT ===== */
+        .trade-input {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 10px 12px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .trade-input .row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .trade-input input {
+            flex: 1;
+            background: #121824;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .trade-input input:focus {
+            border-color: #38bdf8;
+        }
+
+        .quick-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .quick-btns button {
+            background: #121824;
+            border: 1px solid #334155;
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .quick-btns button:hover {
+            background: #1a273a;
+            border-color: #38bdf8;
+        }
+
+        /* ===== TRADE BUTTONS ===== */
+        .trade-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .trade-btns .btn-buy {
+            background: #22c55e;
+        }
+
+        .trade-btns .btn-sell {
+            background: #ef4444;
+        }
+
+        .trade-btns .btn-trade {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .trade-btns .btn-trade:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: bold;
+            z-index: 999;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast-success {
+            border-color: #22c55e;
+        }
+
+        .toast-error {
+            border-color: #ef4444;
+        }
+
+        .toast-warning {
+            border-color: #f59e0b;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-box .detail {
+            background: #121824;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-box .detail .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .modal-box .btn-close {
+            background: #1877f2;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        .body::-webkit-scrollbar,
+        .coin-items::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .body::-webkit-scrollbar-track,
+        .coin-items::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .body::-webkit-scrollbar-thumb,
+        .coin-items::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+
+            .navbar a {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+
+            .navbar a .icon {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container" id="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="left">
+                <img src="Image/Logo2.jpg" alt="MiTrade">
+                <h2>MiTrade</h2>
+                <!-- 📱 ตรวจสอบ Device ก่อนโหลดเนื้อหา -->
+                <script src="device-check.js"></script>
+            </div>
+            <div class="right">
+                <span class="username" id="user-display">User</span>
+                <button class="btn-logout" id="btn-logout">Logout</button>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <a href="dashboard.html" class="active" id="nav-home">
+                <span class="icon">🏠</span> Home
+            </a>
+            <a href="history.html" id="nav-history">
+                <span class="icon">📜</span> History
+            </a>
+            <a href="chat.html" id="nav-admin">
+                <span class="icon">🛡️</span> Admin
+            </a>
+            <a href="profile.html" id="nav-profile">
+                <span class="icon">👤</span> Profile
+            </a>
+        </nav>
+
+        <!-- BODY -->
+        <div class="body">
+            <!-- Balance -->
+            <div class="balance-card">
+                <div>
+                    <div class="label">💰 Balance</div>
+                    <div class="value" id="user-balance">$0.00 USD</div>
+                </div>
+                <div>
+                    <span class="status status-online" id="trade-status">● Online</span>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-wrapper">
+                <div class="price-header">
+                    <span class="symbol" id="selected-symbol">📊 BTC/USDT</span>
+                    <span class="current-price" id="live-price">$95,000.00</span>
+                </div>
+                <canvas id="stockChart"></canvas>
+                <div class="timer-bar" id="timer-bar">
+                    <span id="timer-type">🟢 BUYing</span>
+                    <span id="timer-count" style="color:#f59e0b;">⏱️ 30s</span>
+                </div>
+            </div>
+
+            <!-- Coin List -->
+            <div class="coin-list">
+                <div class="title">🪙 Select Coin</div>
+                <div class="coin-items" id="coin-list"></div>
+            </div>
+
+            <!-- Trade Input -->
+            <div class="trade-input">
+                <div class="row">
+                    <input type="number" id="trade-amount" placeholder="Amount" value="10" min="1">
+                    <div class="quick-btns">
+                        <button onclick="setPercent(0.25)">25%</button>
+                        <button onclick="setPercent(0.50)">50%</button>
+                        <button onclick="setPercent(0.75)">75%</button>
+                        <button onclick="setPercent(1.00)">100%</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade Buttons -->
+            <div class="trade-btns">
+                <button class="btn-trade btn-buy" id="btn-buy">🟢 BUY (Higher)</button>
+                <button class="btn-trade btn-sell" id="btn-sell">🔴 SELL (Lower)</button>
+            </div>
+        </div>
+
+        <!-- RESULT MODAL -->
+        <div class="modal-overlay" id="result-modal">
+            <div class="modal-box">
+                <h3 id="modal-title">⏳ WAITING</h3>
+                <div class="detail" id="modal-detail">
+                    <div class="row"><span style="color:#94a3b8;">Asset:</span><strong id="res-symbol">BTC/USDT</strong>
+                    </div>
+                    <div class="row"><span style="color:#94a3b8;">Entry Price:</span><strong
+                            id="res-entry">$0.00</strong></div>
+                    <div class="row"><span style="color:#94a3b8;">Exit Price:</span><strong id="res-exit">$0.00</strong>
+                    </div>
+                    <div class="row"><span style="color:#94a3b8;">Result:</span><strong id="res-result">-</strong></div>
+                </div>
+                <button class="btn-close" id="btn-close-modal">OK</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // FIREBASE CONFIG
+        // ==========================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDCE_qqKanTTdVXYwBMBIfPu0M0Xy-kbX8",
+            authDomain: "hujai-web.firebaseapp.com",
+            databaseURL: "https://hujai-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hujai-web",
+            storageBucket: "hujai-web.firebasestorage.app",
+            messagingSenderId: "827968973337",
+            appId: "1:827968973337:web:ae6ef630b59cf429575888"
+        };
+
+        function loadFirebase(callback) {
+            const s1 = document.createElement('script');
+            s1.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js';
+            s1.onload = function () {
+                const s2 = document.createElement('script');
+                s2.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js';
+                s2.onload = function () {
+                    firebase.initializeApp(FIREBASE_CONFIG);
+                    callback(firebase.database());
+                };
+                document.head.appendChild(s2);
+            };
+            document.head.appendChild(s1);
+        }
+
+        // ==========================================
+        // GLOBALS
+        // ==========================================
+        let db = null;
+        let currentUser = null;
+        let currentBalance = 0;
+        let isTrading = false;
+        let activeTimer = null;
+        let isFinishing = false;
+        let selectedCoinKey = 'BTC';
+        let pendingTrade = null;
+
+        // DOM refs
+        const userDisplay = document.getElementById('user-display');
+        const userBalance = document.getElementById('user-balance');
+        const toastEl = document.getElementById('toast');
+        const timerBar = document.getElementById('timer-bar');
+        const timerType = document.getElementById('timer-type');
+        const timerCount = document.getElementById('timer-count');
+
+        // ==========================================
+        // TOAST
+        // ==========================================
+        function showToast(msg, type = 'success') {
+            toastEl.textContent = msg;
+            toastEl.className = `toast toast-${type}`;
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 3500);
+        }
+
+        // ==========================================
+        // COINS DATA (Slow movement like real)
+        // ==========================================
+        const coins = {
+            'BTC': {name: 'Bitcoin', price: 95000, volatility: 25, trendState: 'up', trendCount: 0, history: Array(20).fill(95000)},
+            'ETH': {name: 'Ethereum', price: 3400, volatility: 8, trendState: 'up', trendCount: 0, history: Array(20).fill(3400)},
+            'BNB': {name: 'BNB', price: 650, volatility: 2, trendState: 'up', trendCount: 0, history: Array(20).fill(650)},
+            'SOL': {name: 'Solana', price: 190, volatility: 1.5, trendState: 'up', trendCount: 0, history: Array(20).fill(190)},
+            'DOGE': {name: 'Dogecoin', price: 0.26, volatility: 0.003, trendState: 'up', trendCount: 0, history: Array(20).fill(0.26)},
+            'TRX': {name: 'TRON', price: 0.24, volatility: 0.002, trendState: 'up', trendCount: 0, history: Array(20).fill(0.24)}
+        };
+
+        // ==========================================
+        // LOAD FIREBASE & INIT
+        // ==========================================
+        loadFirebase(function (database) {
+            db = database;
+            console.log('✅ Firebase Ready');
+
+            // Get user from URL or session
+            const params = new URLSearchParams(window.location.search);
+            let userId = params.get('user');
+
+            if (!userId) {
+                const saved = sessionStorage.getItem('mitrade_user');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        userId = data.userId;
+                    } catch (e) { }
+                }
+            }
+
+            if (!userId) {
+                showToast('⚠️ Please login first', 'error');
+                setTimeout(() => window.location.href = 'index.html', 1500);
+                return;
+            }
+
+            currentUser = userId;
+
+            // Load user data
+            db.ref(`users/${userId}`).once('value').then(snap => {
+                const data = snap.val();
+                if (!data) {
+                    showToast('❌ User not found', 'error');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                    return;
+                }
+
+                currentBalance = data.balance || 0;
+                userDisplay.textContent = data.username || userId;
+                userBalance.textContent = `$${currentBalance.toFixed(2)} USD`;
+
+                if (currentBalance <= 0) {
+                    showToast('⚠️ Your balance is $0. Please deposit funds.', 'warning');
+                }
+
+                // Init chart & coins
+                initChart();
+                renderCoinList();
+                selectCoin('BTC');
+                startPriceUpdates();
+                setupTradeListeners();
+                listenBalance();
+                checkPendingTrade();
+
+                console.log(`✅ User ${userId} logged in, Balance: $${currentBalance}`);
+            }).catch(err => {
+                console.error(err);
+                showToast('❌ Error loading user data', 'error');
+            });
+
+            // ===== LOGOUT =====
+            document.getElementById('btn-logout').addEventListener('click', function () {
+                if (confirm('Logout?')) {
+                    sessionStorage.removeItem('mitrade_user');
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // ===== NAVBAR ACTIVE STATE =====
+            // Highlight current page
+            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+            document.querySelectorAll('.navbar a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+
+        // ==========================================
+        // CHECK PENDING TRADE
+        // ==========================================
+        function checkPendingTrade() {
+            if (!currentUser) return;
+            db.ref(`users/${currentUser}/pendingTrade`).on('value', snap => {
+                const data = snap.val();
+                if (data && data.status === 'pending') {
+                    pendingTrade = data;
+                    document.getElementById('trade-status').textContent = '⏳ Trading...';
+                    document.getElementById('trade-status').className = 'status status-trading';
+                } else {
+                    pendingTrade = null;
+                    document.getElementById('trade-status').textContent = '● Online';
+                    document.getElementById('trade-status').className = 'status status-online';
+                }
+            });
+        }
+
+        // ==========================================
+        // LISTEN BALANCE (Realtime)
+        // ==========================================
+        function listenBalance() {
+            if (!currentUser) return;
+            db.ref(`users/${currentUser}/balance`).on('value', snap => {
+                const val = snap.val() || 0;
+                currentBalance = val;
+                userBalance.textContent = `$${val.toFixed(2)} USD`;
+            });
+        }
+
+        // ==========================================
+        // CHART
+        // ==========================================
+        let stockChart = null;
+
+        function initChart() {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        label: 'Price',
+                        data: coins[selectedCoinKey].history,
+                        borderColor: '#38bdf8',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {display: false},
+                        y: {grid: {color: '#2a3a50'}, ticks: {color: '#94a3b8'}}
+                    },
+                    plugins: {legend: {display: false}}
+                }
+            });
+        }
+
+        function renderCoinList() {
+            const container = document.getElementById('coin-list');
+            container.innerHTML = '';
+            Object.keys(coins).forEach(key => {
+                const coin = coins[key];
+                const div = document.createElement('div');
+                div.className = `coin-item ${key === selectedCoinKey ? 'active' : ''}`;
+                div.onclick = () => {if (!isTrading) selectCoin(key);};
+                div.innerHTML = `
+                    <span class="name">${coin.name}</span>
+                    <span class="price">$${coin.price.toFixed(key === 'DOGE' || key === 'TRX' ? 4 : 2)}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function selectCoin(key) {
+            selectedCoinKey = key;
+            document.getElementById('selected-symbol').textContent = `📊 ${key}/USDT`;
+            if (stockChart) {
+                stockChart.data.datasets[0].data = [...coins[key].history];
+                stockChart.update();
+            }
+            renderCoinList();
+        }
+
+        // ==========================================
+        // PRICE UPDATES (Slow like real market)
+        // ==========================================
+        let priceInterval = null;
+
+        function startPriceUpdates() {
+            if (priceInterval) clearInterval(priceInterval);
+            priceInterval = setInterval(() => {
+                Object.keys(coins).forEach(key => {
+                    const coin = coins[key];
+                    if (!coin.maxSteps) coin.maxSteps = Math.floor(Math.random() * 6) + 6;
+
+                    let change = 0;
+                    if (coin.trendState === 'up') {
+                        change = (Math.random() * 0.3 + 0.5) * coin.volatility;
+                        coin.trendCount++;
+                        if (coin.trendCount >= coin.maxSteps) {
+                            coin.trendState = 'down';
+                            coin.trendCount = 0;
+                            coin.maxSteps = Math.floor(Math.random() * 6) + 6;
+                        }
+                    } else {
+                        change = -(Math.random() * 0.3 + 0.5) * coin.volatility;
+                        coin.trendCount++;
+                        if (coin.trendCount >= coin.maxSteps) {
+                            coin.trendState = 'up';
+                            coin.trendCount = 0;
+                            coin.maxSteps = Math.floor(Math.random() * 6) + 6;
+                        }
+                    }
+
+                    coin.price = Math.max(0.0001, coin.price + change);
+
+                    if (key === selectedCoinKey) {
+                        coin.history.shift();
+                        coin.history.push(coin.price);
+                        if (stockChart) {
+                            stockChart.data.datasets[0].data = coin.history;
+                            stockChart.update();
+                        }
+                        const decimals = key === 'DOGE' || key === 'TRX' ? 4 : 2;
+                        document.getElementById('live-price').textContent = `$${coin.price.toFixed(decimals)}`;
+                    }
+
+                    const items = document.querySelectorAll('.coin-item');
+                    const idx = Object.keys(coins).indexOf(key);
+                    if (items[idx]) {
+                        const decimals = key === 'DOGE' || key === 'TRX' ? 4 : 2;
+                        items[idx].querySelector('.price').textContent = `$${coin.price.toFixed(decimals)}`;
+                    }
+                });
+            }, 1000);
+        }
+
+        // ==========================================
+        // QUICK PERCENT
+        // ==========================================
+        window.setPercent = function (ratio) {
+            if (isTrading) {
+                showToast('⚠️ Please wait for current trade to finish', 'warning');
+                return;
+            }
+            const amount = currentBalance * ratio;
+            document.getElementById('trade-amount').value = amount.toFixed(2);
+        };
+
+        // ==========================================
+        // TRADE FUNCTIONS
+        // ==========================================
+        function setupTradeListeners() {
+            document.getElementById('btn-buy').addEventListener('click', () => startTrade('buy'));
+            document.getElementById('btn-sell').addEventListener('click', () => startTrade('sell'));
+            document.getElementById('btn-close-modal').addEventListener('click', () => {
+                document.getElementById('result-modal').classList.remove('show');
+            });
+        }
+
+        async function startTrade(type) {
+            if (isTrading) {
+                showToast('⚠️ Please wait for current trade to finish', 'warning');
+                return;
+            }
+
+            if (currentBalance <= 0) {
+                showToast('⚠️ Insufficient balance! Please deposit funds.', 'error');
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('trade-amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('⚠️ Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (amount > currentBalance) {
+                showToast('⚠️ Insufficient balance', 'error');
+                return;
+            }
+
+            // Deduct balance
+            try {
+                const balanceRef = db.ref(`users/${currentUser}/balance`);
+                const snap = await balanceRef.once('value');
+                const bal = snap.val() || 0;
+                if (amount > bal) {
+                    showToast('⚠️ Insufficient balance', 'error');
+                    return;
+                }
+                await balanceRef.set(bal - amount);
+                currentBalance = bal - amount;
+                userBalance.textContent = `$${currentBalance.toFixed(2)} USD`;
+            } catch (e) {
+                showToast('❌ ' + e.message, 'error');
+                return;
+            }
+
+            if (activeTimer) {
+                clearInterval(activeTimer);
+                activeTimer = null;
+            }
+
+            isTrading = true;
+            document.getElementById('btn-buy').disabled = true;
+            document.getElementById('btn-sell').disabled = true;
+            document.getElementById('trade-status').textContent = '⏳ Trading...';
+            document.getElementById('trade-status').className = 'status status-trading';
+
+            const entryPrice = coins[selectedCoinKey].price;
+
+            // Save pending trade to Firebase for admin
+            const tradeData = {
+                userId: currentUser,
+                type: type,
+                symbol: selectedCoinKey,
+                entryPrice: entryPrice,
+                amount: amount,
+                status: 'pending',
+                startTime: Date.now(),
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const pendingRef = db.ref(`users/${currentUser}/pendingTrade`);
+                await pendingRef.set(tradeData);
+
+                const adminPendingRef = db.ref('admin/pendingTrades').push();
+                await adminPendingRef.set({
+                    ...tradeData,
+                    userId: currentUser,
+                    tradeId: adminPendingRef.key
+                });
+
+                pendingTrade = tradeData;
+            } catch (e) {
+                console.error('Save pending trade error:', e);
+            }
+
+            let timeLeft = 30;
+
+            timerBar.style.display = 'flex';
+            timerType.textContent = type === 'buy' ? `🟢 BUY ${selectedCoinKey}` : `🔴 SELL ${selectedCoinKey}`;
+            timerType.style.color = type === 'buy' ? '#22c55e' : '#ef4444';
+            timerCount.textContent = `⏱️ ${timeLeft}s`;
+
+            activeTimer = setInterval(() => {
+                timeLeft--;
+                timerCount.textContent = `⏱️ ${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(activeTimer);
+                    activeTimer = null;
+                    // Time's up = LOSS (admin didn't approve)
+                    finishTrade(type, entryPrice, amount, 'LOSS', '⏱️ Time out - No admin approval');
+                }
+            }, 1000);
+        }
+
+        async function finishTrade(type, entryPrice, amount, result, message) {
+            if (isFinishing) return;
+            isFinishing = true;
+
+            const exitPrice = coins[selectedCoinKey].price;
+
+            // Clear pending trade
+            try {
+                await db.ref(`users/${currentUser}/pendingTrade`).remove();
+                const adminRef = db.ref('admin/pendingTrades');
+                const snap = await adminRef.orderByChild('userId').equalTo(currentUser).once('value');
+                snap.forEach(child => {
+                    child.ref.remove();
+                });
+            } catch (e) {console.error('Clear pending error:', e);}
+
+            let resultText = '';
+            let titleColor = '#ef4444';
+            let payout = 0;
+
+            if (result === 'WIN') {
+                payout = amount + (amount * 0.85);
+                resultText = 'WIN! 🎉';
+                titleColor = '#22c55e';
+            } else if (result === 'DRAW') {
+                payout = amount;
+                resultText = 'DRAW 🤝';
+                titleColor = '#f59e0b';
+            } else {
+                payout = 0;
+                resultText = 'LOSS ❌';
+                titleColor = '#ef4444';
+            }
+
+            // Update balance if win
+            if (payout > 0) {
+                try {
+                    const balanceRef = db.ref(`users/${currentUser}/balance`);
+                    const snap = await balanceRef.once('value');
+                    await balanceRef.set((snap.val() || 0) + payout);
+                    currentBalance = (snap.val() || 0) + payout;
+                    userBalance.textContent = `$${currentBalance.toFixed(2)} USD`;
+                } catch (e) {
+                    console.error('Balance update error:', e);
+                }
+            }
+
+            // Save order history
+            try {
+                const orderRef = db.ref(`users/${currentUser}/orders`).push();
+                await orderRef.set({
+                    symbol: selectedCoinKey,
+                    type: type.toUpperCase(),
+                    entryPrice: entryPrice,
+                    exitPrice: exitPrice,
+                    amount: amount,
+                    payout: payout > 0 ? (payout - amount) : -amount,
+                    result: result,
+                    message: message || '',
+                    timestamp: new Date().toISOString()
+                });
+            } catch (e) {console.error('Order save error:', e);}
+
+            // Show modal
+            document.getElementById('modal-title').textContent = resultText;
+            document.getElementById('modal-title').style.color = titleColor;
+            document.getElementById('res-symbol').textContent = `${selectedCoinKey}/USDT`;
+            document.getElementById('res-entry').textContent = `$${entryPrice.toFixed(4)}`;
+            document.getElementById('res-exit').textContent = `$${exitPrice.toFixed(4)}`;
+            document.getElementById('res-result').textContent = resultText;
+            document.getElementById('res-result').style.color = titleColor;
+
+            document.getElementById('result-modal').classList.add('show');
+
+            timerBar.style.display = 'none';
+            isTrading = false;
+            isFinishing = false;
+            pendingTrade = null;
+            document.getElementById('btn-buy').disabled = false;
+            document.getElementById('btn-sell').disabled = false;
+            document.getElementById('trade-status').textContent = '● Online';
+            document.getElementById('trade-status').className = 'status status-online';
+
+            try {
+                const snap = await db.ref(`users/${currentUser}/balance`).once('value');
+                currentBalance = snap.val() || 0;
+                userBalance.textContent = `$${currentBalance.toFixed(2)} USD`;
+            } catch (e) { }
+        }
+
+        // ==========================================
+        // LISTEN FOR ADMIN APPROVAL
+        // ==========================================
+        function listenAdminApproval() {
+            if (!currentUser) return;
+            db.ref(`users/${currentUser}/pendingTrade`).on('value', async snap => {
+                const data = snap.val();
+                if (data && data.status === 'approved_win') {
+                    if (isTrading) {
+                        clearInterval(activeTimer);
+                        activeTimer = null;
+                        await finishTrade(data.type, data.entryPrice, data.amount, 'WIN', '✅ Admin approved WIN');
+                    }
+                } else if (data && data.status === 'approved_loss') {
+                    if (isTrading) {
+                        clearInterval(activeTimer);
+                        activeTimer = null;
+                        await finishTrade(data.type, data.entryPrice, data.amount, 'LOSS', '❌ Admin approved LOSS');
+                    }
+                }
+            });
+        }
+
+        // Override to add admin listener
+        const origListenBalance = listenBalance;
+        listenBalance = function () {
+            origListenBalance();
+            listenAdminApproval();
+        };
+
+        console.log('🚀 MiTrade Dashboard Ready');
+        console.log('📊 Admin controls WIN/LOSS');
+        console.log('⏱️ If admin does not approve = LOSS');
+    </script>
+
+
+    <script src="protect.js"></script>
+</body>
+
+</html>

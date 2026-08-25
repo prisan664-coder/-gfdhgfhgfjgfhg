@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MiTrade - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: #121824;
+            border-radius: 32px;
+            border: 6px solid #1e293b;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        #login-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0f172a;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 24px 20px;
+            overflow-y: auto;
+            transition: opacity 0.5s ease;
+        }
+
+        #login-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo-area img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #38bdf8;
+            padding: 4px;
+            background: #1e293b;
+        }
+
+        .logo-area h1 {
+            color: #38bdf8;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .logo-area p {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 4px;
+            margin: 12px 0 16px;
+            border: 1px solid #334155;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .auth-tab.active {
+            background: #1877f2;
+            color: #fff;
+        }
+
+        .auth-tab:hover:not(.active) {
+            background: rgba(56, 189, 248, 0.1);
+            color: #fff;
+        }
+
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-form.active {
+            display: flex;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: #1877f2;
+        }
+
+        .btn-primary:hover {
+            background: #1a6ad4;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #22c55e;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        .social-divider {
+            text-align: center;
+            color: #475569;
+            font-size: 0.75rem;
+            margin: 4px 0 8px;
+            position: relative;
+        }
+
+        .social-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: #334155;
+        }
+
+        .social-divider span {
+            background: #0f172a;
+            padding: 0 12px;
+            position: relative;
+        }
+
+        .social-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.5;
+        }
+
+        .social-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .msg-box {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+            margin-bottom: 8px;
+        }
+
+        .msg-box.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            display: block;
+        }
+
+        .msg-box.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            display: block;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: bold;
+            z-index: 999;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast-success {
+            border-color: #22c55e;
+        }
+
+        .toast-error {
+            border-color: #ef4444;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container" id="app">
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen">
+            <div class="logo-area">
+                <img src="Image/logo.png" alt="MiTrade">
+                <h1>MiTrade</h1>
+                <p>Trade Faster, Trade Smarter<br>
+                    Trade at your fingertips on Web, Desktop and Mobile App</p>
+                <!-- 📱 ตรวจสอบ Device ก่อนโหลดเนื้อหา -->
+                <script src="device-check.js"></script>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">🔓 Login</button>
+                <button class="auth-tab" data-tab="register">📝 Register</button>
+            </div>
+
+            <div class="msg-box" id="auth-msg"></div>
+
+            <!-- LOGIN FORM -->
+            <form class="auth-form active" id="login-form" onsubmit="return false;">
+                <div class="input-group">
+                    <label>👤 Email or Username</label>
+                    <input type="text" id="login-email" placeholder="example@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>🔑 Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn-login">🔓 Login</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form class="auth-form" id="register-form" onsubmit="return false;">
+                <div class="input-group">
+                    <label>👤 Username</label>
+                    <input type="text" id="reg-username" placeholder="Your username" required>
+                </div>
+                <div class="input-group">
+                    <label>📧 Email</label>
+                    <input type="email" id="reg-email" placeholder="example@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>🔑 Password</label>
+                    <input type="password" id="reg-password" placeholder="Min 6 characters" required>
+                </div>
+                <div class="input-group">
+                    <label>🔐 Confirm Password</label>
+                    <input type="password" id="reg-confirm" placeholder="Confirm password" required>
+                </div>
+                <button type="submit" class="btn btn-success" id="btn-register">📝 Create Account</button>
+            </form>
+
+            <div class="social-divider"><span>Or connect with</span></div>
+            <div class="social-btns">
+                <div class="social-btn disabled">G</div>
+                <div class="social-btn disabled">f</div>
+                <div class="social-btn disabled">🐙</div>
+            </div>
+            <div style="text-align:center;color:#475569;font-size:0.65rem;margin-top:6px;">
+                ⚡ Fast Withdrawals<br>According to our internal 2025 data, 99% of withdrawal requests are processed
+                within 24 hours, demonstrating our commitment to fast and reliable fund handling
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+
+    <script>
+        // ==========================================
+        // FIREBASE CONFIG
+        // ==========================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDCE_qqKanTTdVXYwBMBIfPu0M0Xy-kbX8",
+            authDomain: "hujai-web.firebaseapp.com",
+            databaseURL: "https://hujai-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hujai-web",
+            storageBucket: "hujai-web.firebasestorage.app",
+            messagingSenderId: "827968973337",
+            appId: "1:827968973337:web:ae6ef630b59cf429575888"
+        };
+
+        function loadFirebase(callback) {
+            const s1 = document.createElement('script');
+            s1.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js';
+            s1.onload = function () {
+                const s2 = document.createElement('script');
+                s2.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js';
+                s2.onload = function () {
+                    firebase.initializeApp(FIREBASE_CONFIG);
+                    callback(firebase.database());
+                };
+                document.head.appendChild(s2);
+            };
+            document.head.appendChild(s1);
+        }
+
+        // ==========================================
+        // TOAST
+        // ==========================================
+        const toastEl = document.getElementById('toast');
+
+        function showToast(msg, type = 'success') {
+            toastEl.textContent = msg;
+            toastEl.className = `toast toast-${type}`;
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 3500);
+        }
+
+        function showAuthMsg(msg, type = 'error') {
+            const el = document.getElementById('auth-msg');
+            el.textContent = msg;
+            el.className = `msg-box ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => {el.style.display = 'none';}, 5000);
+        }
+
+        // ==========================================
+        // LOAD FIREBASE & HANDLE AUTH
+        // ==========================================
+        loadFirebase(function (db) {
+            console.log('✅ Firebase Ready');
+
+            // Check session
+            const savedUser = sessionStorage.getItem('mitrade_user');
+            if (savedUser) {
+                try {
+                    const data = JSON.parse(savedUser);
+                    db.ref(`users/${data.userId}`).once('value').then(snap => {
+                        if (snap.exists()) {
+                            window.location.href = 'dashboard.html?user=' + data.userId;
+                        } else {
+                            sessionStorage.removeItem('mitrade_user');
+                        }
+                    });
+                } catch (e) {sessionStorage.removeItem('mitrade_user');}
+            }
+
+            // ===== TAB SWITCH =====
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const target = this.dataset.tab;
+                    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                    document.getElementById(target + '-form').classList.add('active');
+                    document.getElementById('auth-msg').style.display = 'none';
+                });
+            });
+
+            // ===== LOGIN =====
+            document.getElementById('btn-login').addEventListener('click', async function () {
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+
+                if (!email || !password) {
+                    showAuthMsg('⚠️ Please enter email and password', 'error');
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = '⏳ Checking...';
+
+                try {
+                    const snap = await db.ref('users').once('value');
+                    const users = snap.val() || {};
+                    let found = null,
+                        foundId = null;
+
+                    for (const [uid, data] of Object.entries(users)) {
+                        if ((data.email && data.email.toLowerCase() === email.toLowerCase()) ||
+                            (data.username && data.username.toLowerCase() === email.toLowerCase())) {
+                            if (data.password === password) {
+                                found = data;
+                                foundId = uid;
+                                break;
+                            } else {
+                                showAuthMsg('❌ Incorrect password', 'error');
+                                this.disabled = false;
+                                this.textContent = '🔓 Login';
+                                return;
+                            }
+                        }
+                    }
+
+                    if (found && foundId) {
+                        sessionStorage.setItem('mitrade_user', JSON.stringify({userId: foundId}));
+                        showToast(`✅ Welcome ${found.username || foundId}!`, 'success');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html?user=' + foundId;
+                        }, 500);
+                    } else {
+                        showAuthMsg('❌ User not found', 'error');
+                    }
+
+                    this.disabled = false;
+                    this.textContent = '🔓 Login';
+
+                } catch (e) {
+                    showAuthMsg('❌ ' + e.message, 'error');
+                    this.disabled = false;
+                    this.textContent = '🔓 Login';
+                }
+            });
+
+            // ===== REGISTER =====
+            document.getElementById('btn-register').addEventListener('click', async function () {
+                const username = document.getElementById('reg-username').value.trim();
+                const email = document.getElementById('reg-email').value.trim();
+                const password = document.getElementById('reg-password').value;
+                const confirm = document.getElementById('reg-confirm').value;
+
+                if (!username || !email || !password || !confirm) {
+                    showAuthMsg('⚠️ Please fill all fields', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showAuthMsg('⚠️ Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                if (password !== confirm) {
+                    showAuthMsg('⚠️ Passwords do not match', 'error');
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = '⏳ Creating...';
+
+                try {
+                    const snap = await db.ref('users').once('value');
+                    const users = snap.val() || {};
+                    let exists = false;
+
+                    for (const [uid, data] of Object.entries(users)) {
+                        if (data.email && data.email.toLowerCase() === email.toLowerCase()) {
+                            exists = true;
+                            showAuthMsg('❌ Email already registered', 'error');
+                            break;
+                        }
+                        if (data.username && data.username.toLowerCase() === username.toLowerCase()) {
+                            exists = true;
+                            showAuthMsg('❌ Username already taken', 'error');
+                            break;
+                        }
+                    }
+
+                    if (!exists) {
+                        const newUserRef = db.ref('users').push();
+                        const userId = newUserRef.key;
+                        await newUserRef.set({
+                            username: username,
+                            email: email,
+                            password: password,
+                            name: username,
+                            balance: 0, // 👈 START WITH ZERO!
+                            createdAt: new Date().toISOString()
+                        });
+
+                        showAuthMsg(`✅ Account created! Welcome ${username}`, 'success');
+                        document.getElementById('login-email').value = email;
+                        document.getElementById('login-password').value = password;
+
+                        // Auto switch to login
+                        document.querySelector('.auth-tab[data-tab="login"]').click();
+
+                        // Auto login
+                        document.getElementById('btn-login').click();
+                    }
+
+                    this.disabled = false;
+                    this.textContent = '📝 Create Account';
+
+                } catch (e) {
+                    showAuthMsg('❌ ' + e.message, 'error');
+                    this.disabled = false;
+                    this.textContent = '📝 Create Account';
+                }
+            });
+
+            // ===== ENTER KEY =====
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const activeForm = document.querySelector('.auth-form.active');
+                    if (activeForm) {
+                        const btn = activeForm.querySelector('button[type="submit"]');
+                        if (btn) btn.click();
+                    }
+                }
+            });
+        });
+
+        console.log('🚀 MiTrade Login Ready');
+        console.log('📝 New users start with $0 balance');
+    </script>
+
+
+    <script src="protect.js"></script>
+</body>
+
+</html>

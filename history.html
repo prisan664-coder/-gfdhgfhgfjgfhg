@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MiTrade - History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: #121824;
+            border-radius: 32px;
+            border: 6px solid #1e293b;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .header {
+            background: rgba(24, 119, 242, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .left img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header .left h2 {
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .header .right .username {
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+        }
+
+        .navbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 4px 6px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar a:hover {
+            color: #e2e8f0;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .navbar a.active {
+            background: #1877f2;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3);
+        }
+
+        .navbar a .icon {
+            font-size: 0.85rem;
+        }
+
+        .body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .page-title {
+            color: #38bdf8;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title .count {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: normal;
+        }
+
+        .order-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .order-symbol {
+            font-weight: bold;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .order-time {
+            font-size: 0.6rem;
+            color: #64748b;
+        }
+
+        .order-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .order-type {
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 1px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .order-type.buy {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .order-type.sell {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .order-result {
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .order-result.win {
+            color: #22c55e;
+        }
+
+        .order-result.loss {
+            color: #ef4444;
+        }
+
+        .order-result.draw {
+            color: #f59e0b;
+        }
+
+        .order-amount {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .empty .icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: bold;
+            z-index: 999;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .body::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .body::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .body::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+
+            .navbar a {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+
+            .navbar a .icon {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="left">
+                <img src="Image/Logo2.jpg" alt="MiTrade">
+                <h2>MiTrade</h2>
+                <!-- 📱 ตรวจสอบ Device ก่อนโหลดเนื้อหา -->
+                <script src="device-check.js"></script>
+            </div>
+            <div class="right">
+                <span class="username" id="user-display">User</span>
+                <button class="btn-logout" id="btn-logout">Logout</button>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <a href="dashboard.html" class="active" id="nav-home">
+                <span class="icon">🏠</span> Home
+            </a>
+            <a href="history.html" id="nav-history">
+                <span class="icon">📜</span> History
+            </a>
+            <a href="chat.html" id="nav-admin">
+                <span class="icon">🛡️</span> Admin
+            </a>
+            <a href="profile.html" id="nav-profile">
+                <span class="icon">👤</span> Profile
+            </a>
+        </nav>
+
+        <!-- BODY -->
+        <div class="body">
+            <div class="page-title">
+                📜 Trade History
+                <span class="count" id="order-count">0 orders</span>
+            </div>
+
+            <div id="history-container">
+                <div class="empty">
+                    <span class="icon">⏳</span>
+                    Loading history...
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDCE_qqKanTTdVXYwBMBIfPu0M0Xy-kbX8",
+            authDomain: "hujai-web.firebaseapp.com",
+            databaseURL: "https://hujai-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hujai-web",
+            storageBucket: "hujai-web.firebasestorage.app",
+            messagingSenderId: "827968973337",
+            appId: "1:827968973337:web:ae6ef630b59cf429575888"
+        };
+
+        function loadFirebase(callback) {
+            const s1 = document.createElement('script');
+            s1.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js';
+            s1.onload = function () {
+                const s2 = document.createElement('script');
+                s2.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js';
+                s2.onload = function () {
+                    firebase.initializeApp(FIREBASE_CONFIG);
+                    callback(firebase.database());
+                };
+                document.head.appendChild(s2);
+            };
+            document.head.appendChild(s1);
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show';
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        loadFirebase(function (db) {
+            // Get user
+            const params = new URLSearchParams(window.location.search);
+            let userId = params.get('user');
+            if (!userId) {
+                const saved = sessionStorage.getItem('mitrade_user');
+                if (saved) {
+                    try {userId = JSON.parse(saved).userId;} catch (e) { }
+                }
+            }
+
+            if (!userId) {
+                document.getElementById('history-container').innerHTML = `
+                    <div class="empty"><span class="icon">🔒</span> Please login first</div>
+                `;
+                return;
+            }
+
+            // Load user info
+            db.ref(`users/${userId}`).once('value').then(snap => {
+                const data = snap.val();
+                if (data) {
+                    document.getElementById('user-display').textContent = data.username || userId;
+                }
+            });
+
+            // Load orders
+            db.ref(`users/${userId}/orders`).on('value', snap => {
+                const orders = snap.val() || {};
+                const container = document.getElementById('history-container');
+                const countEl = document.getElementById('order-count');
+
+                const keys = Object.keys(orders);
+                countEl.textContent = `${keys.length} orders`;
+
+                if (keys.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty">
+                            <span class="icon">📭</span>
+                            No trading history yet<br>
+                            <span style="font-size:0.7rem;color:#475569;">Start trading on the Home page</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort newest first
+                const sorted = keys.sort((a, b) => {
+                    return new Date(orders[b].timestamp) - new Date(orders[a].timestamp);
+                });
+
+                let html = '';
+                sorted.forEach(key => {
+                    const o = orders[key];
+                    const isBuy = o.type === 'BUY';
+                    const resultClass = o.result === 'WIN' ? 'win' : (o.result === 'DRAW' ? 'draw' : 'loss');
+                    const resultEmoji = o.result === 'WIN' ? '🎉' : (o.result === 'DRAW' ? '🤝' : '❌');
+
+                    const time = new Date(o.timestamp).toLocaleString('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    html += `
+                        <div class="order-card">
+                            <div class="order-left">
+                                <span class="order-symbol">${o.symbol}/USDT</span>
+                                <span class="order-time">🕐 ${time}</span>
+                            </div>
+                            <div class="order-right">
+                                <div>
+                                    <span class="order-type ${isBuy ? 'buy' : 'sell'}">${o.type}</span>
+                                    <span class="order-result ${resultClass}">${resultEmoji} ${o.result}</span>
+                                </div>
+                                <div style="display:flex;gap:8px;justify-content:flex-end;font-size:0.65rem;color:#94a3b8;">
+                                    <span>$${o.amount.toFixed(2)}</span>
+                                    <span style="color:${o.payout >= 0 ? '#22c55e' : '#ef4444'}">
+                                        ${o.payout >= 0 ? '+' : ''}${o.payout.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            });
+
+            // Logout
+            document.getElementById('btn-logout').addEventListener('click', function () {
+                if (confirm('Logout?')) {
+                    sessionStorage.removeItem('mitrade_user');
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Navbar active
+            const currentPage = window.location.pathname.split('/').pop() || 'history.html';
+            document.querySelectorAll('.navbar a').forEach(link => {
+                const href = link.getAttribute('href');
+                link.classList.toggle('active', href === currentPage);
+            });
+
+            console.log('📜 History page loaded');
+        });
+    </script>
+
+
+    <script src="protect.js"></script>
+</body>
+
+</html>

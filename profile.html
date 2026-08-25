@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MiTrade - Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: #121824;
+            border-radius: 32px;
+            border: 6px solid #1e293b;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(24, 119, 242, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .left img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header .left h2 {
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .header .right .username {
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 4px 6px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar a:hover {
+            color: #e2e8f0;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .navbar a.active {
+            background: #1877f2;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3);
+        }
+
+        .navbar a .icon {
+            font-size: 0.85rem;
+        }
+
+        /* BODY */
+        .body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .body::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .body::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .body::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        /* PROFILE CARD */
+        .profile-card {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #1877f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 0 auto 6px;
+        }
+
+        .profile-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .profile-email {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .profile-balance {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+
+        /* BUTTONS */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-deposit {
+            background: #22c55e;
+        }
+
+        .btn-deposit:hover:not(:disabled) {
+            background: #16a34a;
+        }
+
+        .btn-withdraw {
+            background: #ef4444;
+        }
+
+        .btn-withdraw:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn-kyc {
+            background: #f59e0b;
+        }
+
+        .btn-kyc:hover:not(:disabled) {
+            background: #d97706;
+        }
+
+        .btn-bonus {
+            background: #8b5cf6;
+        }
+
+        .btn-bonus:hover:not(:disabled) {
+            background: #7c3aed;
+        }
+
+        .btn-primary {
+            background: #1877f2;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #1a6ad4;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .btn-success {
+            background: #22c55e;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn-full {
+            grid-column: 1 / -1;
+        }
+
+        /* SECTION */
+        .section {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid #334155;
+        }
+
+        .section-title {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-box::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .modal-box::-webkit-scrollbar-track {
+            background: #121824;
+        }
+
+        .modal-box::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .modal-header h3 {
+            color: #38bdf8;
+            font-size: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            background: #121824;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            border-color: #38bdf8;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .input-group select option {
+            background: #1e293b;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-modal {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* QR CODE */
+        .qr-area {
+            text-align: center;
+            background: #121824;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #334155;
+            margin-bottom: 12px;
+        }
+
+        .qr-area img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .qr-area .qr-text {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            margin-top: 6px;
+        }
+
+        .qr-area .binance-link {
+            color: #38bdf8;
+            font-size: 0.75rem;
+            word-break: break-all;
+            margin-top: 4px;
+        }
+
+        .copy-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .copy-btn:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        /* KYC Preview */
+        .kyc-preview {
+            display: flex;
+            gap: 8px;
+            margin: 6px 0;
+        }
+
+        .kyc-preview img {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #334155;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #121824;
+        }
+
+        .file-upload-area:hover {
+            border-color: #38bdf8;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-area .preview-img {
+            max-width: 100%;
+            max-height: 100px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+
+        /* BONUS TABLE */
+        .bonus-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .bonus-table th {
+            background: #121824;
+            color: #94a3b8;
+            padding: 6px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .bonus-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #1e293b;
+            color: #e2e8f0;
+        }
+
+        .bonus-table tr:hover td {
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .bonus-highlight {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: bold;
+            z-index: 999;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast-success {
+            border-color: #22c55e;
+        }
+
+        .toast-error {
+            border-color: #ef4444;
+        }
+
+        .toast-warning {
+            border-color: #f59e0b;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* KYC STATUS */
+        .kyc-status {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .kyc-verified {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .kyc-pending {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+        }
+
+        .kyc-none {
+            background: rgba(94, 94, 94, 0.15);
+            border: 1px solid #64748b;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                max-width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+
+            .navbar a {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+
+            .navbar a .icon {
+                font-size: 0.7rem;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .modal-box {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="left">
+                <img src="Image/Logo2.jpg" alt="MiTrade">
+                <h2>MiTrade</h2>
+                <!-- 📱 ตรวจสอบ Device ก่อนโหลดเนื้อหา -->
+    <script src="device-check.js"></script>
+            </div>
+            <div class="right">
+                <span class="username" id="user-display">User</span>
+                <button class="btn-logout" id="btn-logout">Logout</button>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <a href="dashboard.html" class="active" id="nav-home">
+                <span class="icon">🏠</span> Home
+            </a>
+            <a href="history.html" id="nav-history">
+                <span class="icon">📜</span> History
+            </a>
+            <a href="chat.html" id="nav-admin">
+                <span class="icon">🛡️</span> Admin
+            </a>
+            <a href="profile.html" id="nav-profile">
+                <span class="icon">👤</span> Profile
+            </a>
+        </nav>
+
+        <!-- BODY -->
+        <div class="body" id="profile-body">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-avatar" id="profile-avatar">👤</div>
+                <div class="profile-name" id="profile-name">User</div>
+                <div class="profile-email" id="profile-email">user@email.com</div>
+                <div class="profile-balance" id="profile-balance">$0.00 USD</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-deposit" id="btn-deposit">💰 Deposit</button>
+                <button class="btn btn-withdraw" id="btn-withdraw">💸 Withdraw</button>
+                <button class="btn btn-kyc" id="btn-kyc">🛡️ KYC</button>
+                <button class="btn btn-bonus" id="btn-bonus">🎁 Bonus</button>
+            </div>
+
+            <!-- KYC Status -->
+            <div id="kyc-status-container"></div>
+
+            <!-- Quick Info -->
+            <div class="section">
+                <div class="section-title">📋 Account Info</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.75rem;">
+                    <div><span style="color:#94a3b8;">User ID:</span> <span id="info-userid"
+                            style="color:#e2e8f0;">-</span></div>
+                    <div><span style="color:#94a3b8;">Member:</span> <span id="info-joined"
+                            style="color:#e2e8f0;">-</span></div>
+                    <div><span style="color:#94a3b8;">Trades:</span> <span id="info-trades"
+                            style="color:#e2e8f0;">0</span></div>
+                    <div><span style="color:#94a3b8;">Win Rate:</span> <span id="info-winrate"
+                            style="color:#e2e8f0;">0%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: DEPOSIT ===== -->
+        <div class="modal-overlay" id="modal-deposit">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3>💰 Deposit Funds</h3>
+                    <button class="modal-close" onclick="closeModal('modal-deposit')">✕</button>
+                </div>
+
+                <div class="qr-area">
+                    <img src="Image/QR trade.jpg" alt="QR Code">
+                    <div class="qr-text">📱 Scan QR with Binance App</div>
+                    <div class="binance-link">
+                        <span id="binance-address">0xd3b60209CD0a1C9D9D167aEA6149B030405a3f32</span>
+                        <button class="copy-btn" onclick="copyText('binance-address')">📋 Copy</button>
+                    </div>
+                    <div style="margin-top:6px;font-size:0.7rem;color:#475569;">
+                        Or use: <a href="https://www.binance.com/en/deposit" target="_blank"
+                            style="color:#38bdf8;">Binance Deposit</a>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>💵 Amount (USD)</label>
+                    <input type="number" id="deposit-amount" placeholder="0.00" min="1" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>📝 Transaction ID (TXID)</label>
+                    <input type="text" id="deposit-txid" placeholder="Enter TXID from Binance">
+                </div>
+
+                <button class="btn-modal btn-success" id="btn-submit-deposit">📤 Submit Deposit</button>
+                <button class="btn-modal btn-outline" style="margin-top:6px;"
+                    onclick="closeModal('modal-deposit')">Cancel</button>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: WITHDRAW ===== -->
+        <div class="modal-overlay" id="modal-withdraw">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3>💸 Withdraw Funds</h3>
+                    <button class="modal-close" onclick="closeModal('modal-withdraw')">✕</button>
+                </div>
+
+                <div class="input-group">
+                    <label>💰 Current Balance</label>
+                    <input type="text" id="withdraw-balance" readonly style="color:#38bdf8;font-weight:bold;">
+                </div>
+
+                <div class="input-group">
+                    <label>💵 Amount to Withdraw (USD)</label>
+                    <input type="number" id="withdraw-amount" placeholder="0.00" min="1" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>📮 Binance Wallet Address</label>
+                    <input type="text" id="withdraw-address" placeholder="0x... or Binance address">
+                </div>
+
+                <div class="input-group">
+                    <label>📝 Reason for Withdrawal</label>
+                    <textarea id="withdraw-reason" placeholder="e.g. Personal use, Investment, etc."></textarea>
+                </div>
+
+                <div
+                    style="background:#121824;padding:10px;border-radius:8px;font-size:0.7rem;color:#94a3b8;margin-bottom:10px;">
+                    ⏱️ Please allow 1-2 hours for processing due to high volume of requests.
+                </div>
+
+                <button class="btn-modal btn-danger" id="btn-submit-withdraw">📤 Submit Withdrawal</button>
+                <button class="btn-modal btn-outline" style="margin-top:6px;"
+                    onclick="closeModal('modal-withdraw')">Cancel</button>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: KYC ===== -->
+        <div class="modal-overlay" id="modal-kyc">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3>🛡️ Identity Verification (KYC)</h3>
+                    <button class="modal-close" onclick="closeModal('modal-kyc')">✕</button>
+                </div>
+
+                <div
+                    style="background:#121824;padding:10px;border-radius:8px;font-size:0.7rem;color:#94a3b8;margin-bottom:12px;">
+                    📸 Please upload clear photos of your ID (front & back). Data is stored locally on your device only.
+                </div>
+
+                <!-- Document Type -->
+                <div class="input-group">
+                    <label>📄 Document Type</label>
+                    <select id="kyc-doc-type">
+                        <option value="id_card">🪪 ID Card (National)</option>
+                        <option value="passport">🛂 Passport</option>
+                        <option value="drivers_license">🚗 Driver's License</option>
+                    </select>
+                </div>
+
+                <!-- Front ID -->
+                <div class="input-group">
+                    <label>📸 Front Side</label>
+                    <div class="file-upload-area" id="upload-front">
+                        <span>📤 Click to upload front photo</span>
+                        <input type="file" id="kyc-front-file" accept="image/*" capture="environment">
+                        <img id="kyc-front-preview" class="preview-img" style="display:none;" alt="Front Preview">
+                    </div>
+                </div>
+
+                <!-- Back ID -->
+                <div class="input-group">
+                    <label>📸 Back Side</label>
+                    <div class="file-upload-area" id="upload-back">
+                        <span>📤 Click to upload back photo</span>
+                        <input type="file" id="kyc-back-file" accept="image/*" capture="environment">
+                        <img id="kyc-back-preview" class="preview-img" style="display:none;" alt="Back Preview">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>👤 First Name</label>
+                        <input type="text" id="kyc-firstname" placeholder="John">
+                    </div>
+                    <div class="input-group">
+                        <label>👤 Last Name</label>
+                        <input type="text" id="kyc-lastname" placeholder="Doe">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>🎂 Date of Birth</label>
+                        <input type="date" id="kyc-dob">
+                    </div>
+                    <div class="input-group">
+                        <label>📅 Age</label>
+                        <input type="number" id="kyc-age" placeholder="18" readonly style="color:#38bdf8;">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>📱 Phone Number</label>
+                        <input type="tel" id="kyc-phone" placeholder="+66 81 234 5678">
+                    </div>
+                    <div class="input-group">
+                        <label>🌍 Country</label>
+                        <select id="kyc-country">
+                            <option value="TH">🇹🇭 Thailand</option>
+                            <option value="US">🇺🇸 United States</option>
+                            <option value="UK">🇬🇧 United Kingdom</option>
+                            <option value="JP">🇯🇵 Japan</option>
+                            <option value="KR">🇰🇷 South Korea</option>
+                            <option value="SG">🇸🇬 Singapore</option>
+                            <option value="MY">🇲🇾 Malaysia</option>
+                            <option value="VN">🇻🇳 Vietnam</option>
+                            <option value="LA">🇱🇦 Laos</option>
+                            <option value="KH">🇰🇭 Cambodia</option>
+                            <option value="MM">🇲🇲 Myanmar</option>
+                            <option value="ID">🇮🇩 Indonesia</option>
+                            <option value="PH">🇵🇭 Philippines</option>
+                            <option value="OTHER">🌏 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>⚧️ Gender</label>
+                        <select id="kyc-gender">
+                            <option value="male">👨 Male</option>
+                            <option value="female">👩 Female</option>
+                            <option value="other">🌈 Other</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="kyc-email" placeholder="example@email.com">
+                    </div>
+                </div>
+
+                <button class="btn-modal btn-primary" id="btn-submit-kyc">💾 Save KYC</button>
+                <button class="btn-modal btn-outline" style="margin-top:6px;"
+                    onclick="closeModal('modal-kyc')">Cancel</button>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: BONUS ===== -->
+        <div class="modal-overlay" id="modal-bonus">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3>🎁 Bonus & Promotions</h3>
+                    <button class="modal-close" onclick="closeModal('modal-bonus')">✕</button>
+                </div>
+
+                <div
+                    style="background:#121824;padding:10px;border-radius:8px;font-size:0.7rem;color:#94a3b8;margin-bottom:10px;">
+                    💰 Deposit bonus is credited instantly. No additional conditions for withdrawal.
+                </div>
+
+                <table class="bonus-table">
+                    <thead>
+                        <tr>
+                            <th>Deposit Amount</th>
+                            <th>Bonus</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>$500</td>
+                            <td>$0</td>
+                            <td>$500</td>
+                        </tr>
+                        <tr>
+                            <td>$1,000</td>
+                            <td class="bonus-highlight">+$100</td>
+                            <td class="bonus-highlight">$1,100</td>
+                        </tr>
+                        <tr>
+                            <td>$2,000</td>
+                            <td class="bonus-highlight">+$200</td>
+                            <td class="bonus-highlight">$2,200</td>
+                        </tr>
+                        <tr>
+                            <td>$3,000</td>
+                            <td class="bonus-highlight">+$300</td>
+                            <td class="bonus-highlight">$3,300</td>
+                        </tr>
+                        <tr>
+                            <td>$5,000</td>
+                            <td class="bonus-highlight">+$600</td>
+                            <td class="bonus-highlight">$5,600</td>
+                        </tr>
+                        <tr>
+                            <td>$10,000</td>
+                            <td class="bonus-highlight">+$2,000</td>
+                            <td class="bonus-highlight">$12,000</td>
+                        </tr>
+                        <tr>
+                            <td>$20,000</td>
+                            <td class="bonus-highlight">+$5,000</td>
+                            <td class="bonus-highlight">$25,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div
+                    style="margin-top:12px;padding:10px;background:#121824;border-radius:8px;font-size:0.7rem;color:#94a3b8;">
+                    ✅ Bonus credited instantly after deposit verification.<br>
+                    ✅ Withdraw anytime with no conditions.
+                </div>
+
+                <button class="btn-modal btn-outline" style="margin-top:10px;"
+                    onclick="closeModal('modal-bonus')">Close</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // FIREBASE CONFIG
+        // ==========================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDCE_qqKanTTdVXYwBMBIfPu0M0Xy-kbX8",
+            authDomain: "hujai-web.firebaseapp.com",
+            databaseURL: "https://hujai-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hujai-web",
+            storageBucket: "hujai-web.firebasestorage.app",
+            messagingSenderId: "827968973337",
+            appId: "1:827968973337:web:ae6ef630b59cf429575888"
+        };
+
+        function loadFirebase(callback) {
+            const s1 = document.createElement('script');
+            s1.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js';
+            s1.onload = function () {
+                const s2 = document.createElement('script');
+                s2.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js';
+                s2.onload = function () {
+                    firebase.initializeApp(FIREBASE_CONFIG);
+                    callback(firebase.database());
+                };
+                document.head.appendChild(s2);
+            };
+            document.head.appendChild(s1);
+        }
+
+        // ==========================================
+        // TOAST
+        // ==========================================
+        const toastEl = document.getElementById('toast');
+
+        function showToast(msg, type = 'success') {
+            toastEl.textContent = msg;
+            toastEl.className = `toast toast-${type}`;
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 4000);
+        }
+
+        // ==========================================
+        // MODAL
+        // ==========================================
+        function openModal(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // Close modal on backdrop click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+
+        // ==========================================
+        // COPY TEXT
+        // ==========================================
+        function copyText(elementId) {
+            const el = document.getElementById(elementId);
+            const text = el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback
+                const range = document.createRange();
+                range.selectNode(el);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                showToast('✅ Copied!', 'success');
+            });
+        }
+
+        // ==========================================
+        // MAIN
+        // ==========================================
+        let db = null;
+        let currentUser = null;
+        let userData = null;
+
+        loadFirebase(function (database) {
+            db = database;
+
+            // Get user
+            const params = new URLSearchParams(window.location.search);
+            let userId = params.get('user');
+            if (!userId) {
+                const saved = sessionStorage.getItem('mitrade_user');
+                if (saved) {
+                    try {userId = JSON.parse(saved).userId;} catch (e) { }
+                }
+            }
+
+            if (!userId) {
+                showToast('⚠️ Please login first', 'error');
+                setTimeout(() => window.location.href = 'index.html', 1500);
+                return;
+            }
+
+            currentUser = userId;
+
+            // Load user data
+            db.ref(`users/${userId}`).once('value').then(snap => {
+                const data = snap.val();
+                if (!data) {
+                    showToast('❌ User not found', 'error');
+                    return;
+                }
+
+                userData = data;
+                updateProfile(data);
+                loadKYCStatus();
+
+                // Listen balance updates
+                db.ref(`users/${userId}/balance`).on('value', snap => {
+                    const val = snap.val() || 0;
+                    document.getElementById('profile-balance').textContent = `$${val.toFixed(2)} USD`;
+                    document.getElementById('withdraw-balance').value = `$${val.toFixed(2)}`;
+                });
+
+                // Load orders count
+                db.ref(`users/${userId}/orders`).once('value').then(orderSnap => {
+                    const orders = orderSnap.val() || {};
+                    const keys = Object.keys(orders);
+                    let wins = 0;
+                    keys.forEach(k => {if (orders[k].result === 'WIN') wins++;});
+                    document.getElementById('info-trades').textContent = keys.length;
+                    document.getElementById('info-winrate').textContent = keys.length > 0 ? `${Math.round((wins / keys.length) * 100)}%` : '0%';
+                });
+
+            }).catch(err => {
+                console.error(err);
+                showToast('❌ Error loading data', 'error');
+            });
+
+            // ===== LOGOUT =====
+            document.getElementById('btn-logout').addEventListener('click', function () {
+                if (confirm('Logout?')) {
+                    sessionStorage.removeItem('mitrade_user');
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // ===== NAVBAR ACTIVE =====
+            const currentPage = window.location.pathname.split('/').pop() || 'profile.html';
+            document.querySelectorAll('.navbar a').forEach(link => {
+                const href = link.getAttribute('href');
+                link.classList.toggle('active', href === currentPage);
+            });
+        });
+
+        // ==========================================
+        // UPDATE PROFILE
+        // ==========================================
+        function updateProfile(data) {
+            document.getElementById('user-display').textContent = data.username || 'User';
+            document.getElementById('profile-name').textContent = data.username || 'User';
+            document.getElementById('profile-email').textContent = data.email || '-';
+            document.getElementById('profile-balance').textContent = `$${(data.balance || 0).toFixed(2)} USD`;
+            document.getElementById('info-userid').textContent = currentUser || '-';
+            document.getElementById('info-joined').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : '-';
+            document.getElementById('withdraw-balance').value = `$${(data.balance || 0).toFixed(2)}`;
+        }
+
+        // ==========================================
+        // KYC - Local Storage
+        // ==========================================
+        const KYC_STORAGE_KEY = 'mitrade_kyc_data';
+
+        function loadKYCStatus() {
+            const kycData = localStorage.getItem(KYC_STORAGE_KEY);
+            const container = document.getElementById('kyc-status-container');
+
+            if (kycData) {
+                try {
+                    const data = JSON.parse(kycData);
+                    if (data.verified) {
+                        container.innerHTML = `
+                            <div class="kyc-status kyc-verified">
+                                ✅ KYC Verified - ${data.fullname || 'User'}
+                            </div>
+                        `;
+                        document.getElementById('btn-kyc').textContent = '✅ KYC Done';
+                        document.getElementById('btn-kyc').disabled = true;
+                        return;
+                    } else if (data.pending) {
+                        container.innerHTML = `
+                            <div class="kyc-status kyc-pending">
+                                ⏳ KYC Pending - Waiting for verification
+                            </div>
+                        `;
+                        document.getElementById('btn-kyc').textContent = '⏳ Pending';
+                        document.getElementById('btn-kyc').disabled = true;
+                        return;
+                    }
+                } catch (e) { }
+            }
+
+            container.innerHTML = `
+                <div class="kyc-status kyc-none">
+                    ⚠️ KYC Not Verified - Please complete verification
+                </div>
+            `;
+            document.getElementById('btn-kyc').textContent = '🛡️ KYC';
+            document.getElementById('btn-kyc').disabled = false;
+        }
+
+        // ==========================================
+        // KYC - Save to Local Storage
+        // ==========================================
+        function saveKYC(data) {
+            const kycData = {
+                ...data,
+                verified: false,
+                pending: true,
+                submittedAt: new Date().toISOString()
+            };
+            localStorage.setItem(KYC_STORAGE_KEY, JSON.stringify(kycData));
+            showToast('✅ KYC data saved locally!', 'success');
+            loadKYCStatus();
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        // ----- DEPOSIT -----
+        document.getElementById('btn-deposit').addEventListener('click', () => openModal('modal-deposit'));
+
+        document.getElementById('btn-submit-deposit').addEventListener('click', async function () {
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            const txid = document.getElementById('deposit-txid').value.trim();
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast('⚠️ Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (!txid) {
+                showToast('⚠️ Please enter Transaction ID', 'error');
+                return;
+            }
+
+            this.disabled = true;
+            this.textContent = '⏳ Submitting...';
+
+            try {
+                const depositRef = db.ref(`users/${currentUser}/deposits`).push();
+                await depositRef.set({
+                    amount: amount,
+                    txid: txid,
+                    status: 'pending',
+                    timestamp: new Date().toISOString(),
+                    method: 'binance'
+                });
+
+                // Notify admin
+                await db.ref('admin/notifications').push({
+                    type: 'deposit',
+                    userId: currentUser,
+                    amount: amount,
+                    txid: txid,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                });
+
+                showToast('✅ Deposit submitted! Admin will verify soon.', 'success');
+                document.getElementById('deposit-amount').value = '';
+                document.getElementById('deposit-txid').value = '';
+                closeModal('modal-deposit');
+
+            } catch (e) {
+                showToast('❌ ' + e.message, 'error');
+            }
+
+            this.disabled = false;
+            this.textContent = '📤 Submit Deposit';
+        });
+
+        // ----- WITHDRAW -----
+        document.getElementById('btn-withdraw').addEventListener('click', () => openModal('modal-withdraw'));
+
+        document.getElementById('btn-submit-withdraw').addEventListener('click', async function () {
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const address = document.getElementById('withdraw-address').value.trim();
+            const reason = document.getElementById('withdraw-reason').value.trim();
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast('⚠️ Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (!address) {
+                showToast('⚠️ Please enter Binance wallet address', 'error');
+                return;
+            }
+
+            if (!reason) {
+                showToast('⚠️ Please enter a reason for withdrawal', 'error');
+                return;
+            }
+
+            // Check balance
+            const balanceSnap = await db.ref(`users/${currentUser}/balance`).once('value');
+            const balance = balanceSnap.val() || 0;
+
+            if (amount > balance) {
+                showToast('⚠️ Insufficient balance', 'error');
+                return;
+            }
+
+            this.disabled = true;
+            this.textContent = '⏳ Submitting...';
+
+            try {
+                const withdrawRef = db.ref(`users/${currentUser}/withdrawals`).push();
+                await withdrawRef.set({
+                    amount: amount,
+                    address: address,
+                    reason: reason || '-',
+                    status: 'pending',
+                    timestamp: new Date().toISOString(),
+                    method: 'binance'
+                });
+
+                // Notify admin
+                await db.ref('admin/notifications').push({
+                    type: 'withdraw',
+                    userId: currentUser,
+                    amount: amount,
+                    address: address,
+                    reason: reason,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                });
+
+                showToast('✅ Withdrawal request submitted! Please allow 1-2 hours for processing.', 'success');
+                document.getElementById('withdraw-amount').value = '';
+                document.getElementById('withdraw-address').value = '';
+                document.getElementById('withdraw-reason').value = '';
+                closeModal('modal-withdraw');
+
+            } catch (e) {
+                showToast('❌ ' + e.message, 'error');
+            }
+
+            this.disabled = false;
+            this.textContent = '📤 Submit Withdrawal';
+        });
+
+        // ----- KYC -----
+        let kycFrontFile = null;
+        let kycBackFile = null;
+
+        document.getElementById('btn-kyc').addEventListener('click', () => {
+            // Check if already verified
+            const kycData = localStorage.getItem(KYC_STORAGE_KEY);
+            if (kycData) {
+                try {
+                    const data = JSON.parse(kycData);
+                    if (data.verified) {
+                        showToast('✅ KYC already verified!', 'success');
+                        return;
+                    }
+                    if (data.pending) {
+                        showToast('⏳ KYC is pending verification', 'warning');
+                        return;
+                    }
+                } catch (e) { }
+            }
+            openModal('modal-kyc');
+        });
+
+        // KYC File upload handlers
+        document.getElementById('kyc-front-file').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                kycFrontFile = file;
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const preview = document.getElementById('kyc-front-preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    document.querySelector('#upload-front span').textContent = '✅ Front uploaded';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('kyc-back-file').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                kycBackFile = file;
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const preview = document.getElementById('kyc-back-preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    document.querySelector('#upload-back span').textContent = '✅ Back uploaded';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Click upload areas
+        document.getElementById('upload-front').addEventListener('click', function () {
+            document.getElementById('kyc-front-file').click();
+        });
+
+        document.getElementById('upload-back').addEventListener('click', function () {
+            document.getElementById('kyc-back-file').click();
+        });
+
+        // KYC Age calculator
+        document.getElementById('kyc-dob').addEventListener('change', function () {
+            const dob = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            document.getElementById('kyc-age').value = age >= 0 ? age : '';
+        });
+
+        // KYC Submit
+        document.getElementById('btn-submit-kyc').addEventListener('click', function () {
+            const firstname = document.getElementById('kyc-firstname').value.trim();
+            const lastname = document.getElementById('kyc-lastname').value.trim();
+            const dob = document.getElementById('kyc-dob').value;
+            const age = document.getElementById('kyc-age').value;
+            const phone = document.getElementById('kyc-phone').value.trim();
+            const country = document.getElementById('kyc-country').value;
+            const gender = document.getElementById('kyc-gender').value;
+            const email = document.getElementById('kyc-email').value.trim();
+            const docType = document.getElementById('kyc-doc-type').value;
+
+            if (!firstname || !lastname) {
+                showToast('⚠️ Please enter full name', 'error');
+                return;
+            }
+
+            if (!dob) {
+                showToast('⚠️ Please select date of birth', 'error');
+                return;
+            }
+
+            if (!phone) {
+                showToast('⚠️ Please enter phone number', 'error');
+                return;
+            }
+
+            if (!email) {
+                showToast('⚠️ Please enter email', 'error');
+                return;
+            }
+
+            if (!kycFrontFile || !kycBackFile) {
+                showToast('⚠️ Please upload both front and back of your ID', 'error');
+                return;
+            }
+
+            // Compress and save
+            const fullname = `${firstname} ${lastname}`;
+
+            // Convert images to base64 (compressed)
+            const readerFront = new FileReader();
+            const readerBack = new FileReader();
+
+            let frontData = null;
+            let backData = null;
+            let loaded = 0;
+
+            readerFront.onload = function (e) {
+                frontData = e.target.result;
+                loaded++;
+                if (loaded === 2) saveKYCFinal();
+            };
+
+            readerBack.onload = function (e) {
+                backData = e.target.result;
+                loaded++;
+                if (loaded === 2) saveKYCFinal();
+            };
+
+            function saveKYCFinal() {
+                const kycData = {
+                    fullname: fullname,
+                    firstname: firstname,
+                    lastname: lastname,
+                    dob: dob,
+                    age: parseInt(age) || 0,
+                    phone: phone,
+                    country: country,
+                    gender: gender,
+                    email: email,
+                    docType: docType,
+                    frontImage: frontData,
+                    backImage: backData,
+                    verified: false,
+                    pending: true,
+                    submittedAt: new Date().toISOString()
+                };
+
+                localStorage.setItem(KYC_STORAGE_KEY, JSON.stringify(kycData));
+                showToast('✅ KYC data saved successfully!', 'success');
+                closeModal('modal-kyc');
+                loadKYCStatus();
+
+                // Reset form
+                document.getElementById('kyc-firstname').value = '';
+                document.getElementById('kyc-lastname').value = '';
+                document.getElementById('kyc-dob').value = '';
+                document.getElementById('kyc-age').value = '';
+                document.getElementById('kyc-phone').value = '';
+                document.getElementById('kyc-email').value = '';
+                document.getElementById('kyc-front-preview').style.display = 'none';
+                document.getElementById('kyc-back-preview').style.display = 'none';
+                document.querySelector('#upload-front span').textContent = '📤 Click to upload front photo';
+                document.querySelector('#upload-back span').textContent = '📤 Click to upload back photo';
+                kycFrontFile = null;
+                kycBackFile = null;
+            }
+
+            // Read both files
+            readerFront.readAsDataURL(kycFrontFile);
+            readerBack.readAsDataURL(kycBackFile);
+        });
+
+        // ----- BONUS -----
+        document.getElementById('btn-bonus').addEventListener('click', () => openModal('modal-bonus'));
+
+        console.log('👤 Profile page loaded');
+        console.log('📁 KYC data stored in localStorage');
+        console.log('🎁 Bonus conditions displayed');
+    </script>
+
+    <script src="protect.js"></script>
+</body>
+
+</html>
